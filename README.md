@@ -1,2 +1,2 @@
 # pydanel
-A small python libary for ordinal arithmetic below epsilon_0
+A small python library for ordinal arithmetic below epsilon_0
