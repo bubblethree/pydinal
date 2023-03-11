@@ -1,6 +1,7 @@
 
-
+#this is the class for infinite ordinal bewlow epsilon_0
 class Inf_ordinal():
+    
     def __init__(self, exp_ord=1, mult_ord =1, add_ord =0):
 
         """every ordinal alpha that is smaller than epsilon_0 can be expressed in the following way: 
