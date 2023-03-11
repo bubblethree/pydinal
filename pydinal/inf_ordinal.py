@@ -59,11 +59,14 @@ class Inf_ordinal():
         
         w=Inf_ordinal()
 
-        if w>self.add_ord:
-            return self.add_ord
+        working_ordinal=self.add_ord
+
+        #loops through the ordinal until the finite part is reached
+        while w<= working_ordinal:
             
-        else:
-            return self.add_ord.finite_part()
+            working_ordinal=working_ordinal.add_ord
+        
+        return working_ordinal
     
     #returns the predecessor of an ordinal (returns )
     def pred(self):
