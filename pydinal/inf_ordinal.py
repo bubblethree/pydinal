@@ -31,13 +31,14 @@ class Inf_ordinal():
         self.mult_ord=mult_ord
 
         self.add_ord=add_ord
-
+    
     #returns a copy of the ordinal
     def copy(self):
         return Inf_ordinal(self.exp_ord,self.mult_ord,self.add_ord)
     
     #This will be useful when comparing the ordinals
     def to_list(self):
+
         return [self.exp_ord,self.mult_ord, self.add_ord]
     
     #an ordinal < e_0 is exactly a limit ordinal when it has no finite part
@@ -62,26 +63,30 @@ class Inf_ordinal():
         working_ordinal=self.add_ord
 
         #loops through the ordinal until the finite part is reached
-        while w<= working_ordinal:
+        while isinstance(working_ordinal, Inf_ordinal):
             
             working_ordinal=working_ordinal.add_ord
         
         return working_ordinal
     
-    #returns the predecessor of an ordinal (returns )
+    #returns the predecessor of an ordinal (for limit ordinals it returns the ordinal )
     def pred(self):
         finite_pred = max(0, self.finite_part()-1)
         return self.limit_part() + finite_pred
     
     #return all the parts of the ordinal that aren't finite, so the parts that have a w**(a) on the right
     def limit_part(self):
-        w=Inf_ordinal()
+        return_ordinal=self.copy()
+        working_ordinal = return_ordinal
         
-        if self.add_ord<w:
-            return Inf_ordinal(self.exp_ord,self.mult_ord,0)
-        else:
-            
-            return Inf_ordinal(self.exp_ord,self.mult_ord,self.add_ord.limit_part())
+
+        while not isinstance(working_ordinal.add_ord, int):
+            working_ordinal = working_ordinal.add_ord
+
+        working_ordinal.add_ord=0
+        
+
+        return return_ordinal
 
     def __lt__(self,other):
         
@@ -90,6 +95,7 @@ class Inf_ordinal():
 
         if isinstance(other,int):
             return False
+        
         return self.to_list() < other.to_list()
 
     def __gt__(self, other):
@@ -103,23 +109,26 @@ class Inf_ordinal():
 
     #return the len of the ordinal i.e the amount of mult_ord that != 0
     def __len__(self):
-        if self.add_ord==0:
-            return 1
-        elif isinstance(self.add_ord, int):
-            return 2
-        else:
-            return 1+ len(self.add_ord)
+        counter=0
+        working_ordinal=self
 
-
+        while not isinstance(working_ordinal, int):
+         working_ordinal=working_ordinal.add_ord
+         counter+=1
+        
+        counter+= min(working_ordinal,1) #0 if add_part is 0 o.w 1
+        return counter
+    
+    
     def __add__(self,other):
         
         if isinstance(other,int):
             
             if other <0:
-                raise NotImplemented
+                raise TypeError("Can not add ordinal to "+ str(type(other)))
             
             return Inf_ordinal(self.exp_ord, self.mult_ord, self.add_ord+other)
-
+        
         '''w**(a_n)*b_n+..+ w**(a_1)*b_1 + b_0 + w**(c)*d
         = w**(c_n)*d_n+..+ w**(c_i)*d_1 + d_0  if c > a_n
         
@@ -136,7 +145,8 @@ class Inf_ordinal():
 
             if (self.exp_ord < other.exp_ord):
                 return other
-        #This just splits up the add ordinal in it's w components
+            
+        #This just splits up the add_ordinal in it's w components
         else:
             return Inf_ordinal(self.exp_ord, self.mult_ord, 0) + (self.add_ord+other)
 
@@ -149,7 +159,7 @@ class Inf_ordinal():
             if other >= 0 :
                 return self
 
-        raise  TypeError("Can not add ordinal to"+str(type(other)))
+        raise  TypeError("Can not add ordinal to "+str(type(other)))
     
 
     def __mul__(self,other):
@@ -244,8 +254,8 @@ class Inf_ordinal():
 
     
 
-    '''gives the ordinal back as a string of the form: "w^(exp_ord)*mult_ord + add_ord"
-    ommits the exponent and mult_ord if they are 1 and the add_ord when it is 0
+    '''gives the ordinal back as a string of the form: "w**(exp_ord)*mult_ord + add_ord"
+    ommitts the exponent and mult_ord if they are 1 and the add_ord when it is 0
     '''
     def __str__(self):
     
