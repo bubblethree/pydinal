@@ -1,6 +1,6 @@
 
-#this is the class for infinite ordinal bewlow epsilon_0
-class Inf_ordinal():
+#this is the class for infinite ordinal below epsilon_0
+class InfOrdinal():
     
     def __init__(self, exp_ord=1, mult_ord =1, add_ord =0):
 
@@ -8,24 +8,24 @@ class Inf_ordinal():
         alpha=w^beta * n + gamma, where beta, gamma are ordinals smaller than epsilon_0 and n is a natural number
         """ 
         
-        if not isinstance(exp_ord,(Inf_ordinal,int)):
-            raise TypeError("Wrong data type for exponent, should be int or an Inf_ordinal but is: "+str(type(exp_ord)) )
+        if not isinstance(exp_ord,(InfOrdinal,int)):
+            raise TypeError("Wrong data type for exponent, should be int or an InfOrdinal but is: "+str(type(exp_ord)) )
 
-        if not isinstance(mult_ord,(Inf_ordinal,int)):
-            raise TypeError("Wrong data type for multiplicator, should be int or an Inf_ordinal but is: "+str(type(mult_ord)) )
+        if not isinstance(mult_ord,(InfOrdinal,int)):
+            raise TypeError("Wrong data type for multiplicator, should be int or an InfOrdinal but is: "+str(type(mult_ord)) )
 
-        if not isinstance(add_ord,(Inf_ordinal,int)):
-            raise TypeError("Wrong data type for added ordinal, should be int or an Inf_ordinal but is: "+str(type(add_ord)) )
+        if not isinstance(add_ord,(InfOrdinal,int)):
+            raise TypeError("Wrong data type for added ordinal, should be int or an InfOrdinal but is: "+str(type(add_ord)) )
 
         if not (exp_ord > 0 ):
             raise ValueError("exponent has to be larger than 0" )
         
-        if (mult_ord < 0 ):
-            raise ValueError("multiplicator has to be larger or equal to 0" )
+        if (mult_ord <= 0 ):
+            raise ValueError("multiplicator has to be larger than 0" )
 
         if (add_ord < 0 ):
             raise ValueError("added ordinal has to be larger or equal to 0" + str(add_ord))
-
+        
         self.exp_ord=exp_ord
 
         self.mult_ord=mult_ord
@@ -34,7 +34,7 @@ class Inf_ordinal():
     
     #returns a copy of the ordinal
     def copy(self):
-        return Inf_ordinal(self.exp_ord,self.mult_ord,self.add_ord)
+        return InfOrdinal(self.exp_ord,self.mult_ord,self.add_ord)
     
     #This will be useful when comparing the ordinals
     def to_list(self):
@@ -48,7 +48,7 @@ class Inf_ordinal():
     
     def __eq__(self, other_ordinal):
         
-        if not isinstance(other_ordinal,Inf_ordinal):
+        if not isinstance(other_ordinal,InfOrdinal):
             return False
         
         return self.to_list()==other_ordinal.to_list()
@@ -58,12 +58,12 @@ class Inf_ordinal():
     #returns the finite part of an ordinal
     def finite_part(self):
         
-        w=Inf_ordinal()
+        w=InfOrdinal()
 
         working_ordinal=self.add_ord
 
         #loops through the ordinal until the finite part is reached
-        while isinstance(working_ordinal, Inf_ordinal):
+        while isinstance(working_ordinal, InfOrdinal):
             
             working_ordinal=working_ordinal.add_ord
         
@@ -90,7 +90,7 @@ class Inf_ordinal():
 
     def __lt__(self,other):
         
-        if not isinstance(other,(Inf_ordinal,int)):
+        if not isinstance(other,(InfOrdinal,int)):
             raise TypeError("Can not compare ordinal to"+str(type(other)))
 
         if isinstance(other,int):
@@ -100,7 +100,7 @@ class Inf_ordinal():
 
     def __gt__(self, other):
 
-        if not isinstance(other,(Inf_ordinal,int)):
+        if not isinstance(other,(InfOrdinal,int)):
             raise TypeError("Can not compare ordinal to"+str(type(other)))
 
         if isinstance(other,int):
@@ -127,7 +127,7 @@ class Inf_ordinal():
             if other <0:
                 raise TypeError("Can not add ordinal to "+ str(type(other)))
             
-            return Inf_ordinal(self.exp_ord, self.mult_ord, self.add_ord+other)
+            return InfOrdinal(self.exp_ord, self.mult_ord, self.add_ord+other)
         
         '''w**(a_n)*b_n+..+ w**(a_1)*b_1 + b_0 + w**(c)*d
         = w**(c_n)*d_n+..+ w**(c_i)*d_1 + d_0  if c > a_n
@@ -138,17 +138,17 @@ class Inf_ordinal():
         if (self.add_ord==0):
 
             if (self.exp_ord > other.exp_ord):
-                return Inf_ordinal(self.exp_ord, self.mult_ord, self.add_ord+other)
+                return InfOrdinal(self.exp_ord, self.mult_ord, self.add_ord+other)
 
             if (self.exp_ord == other.exp_ord):
-                return Inf_ordinal(self.exp_ord, self.mult_ord+other.mult_ord, self.add_ord)
+                return InfOrdinal(self.exp_ord, self.mult_ord+other.mult_ord, self.add_ord)
 
             if (self.exp_ord < other.exp_ord):
                 return other
             
         #This just splits up the add_ordinal in it's w components
         else:
-            return Inf_ordinal(self.exp_ord, self.mult_ord, 0) + (self.add_ord+other)
+            return InfOrdinal(self.exp_ord, self.mult_ord, 0) + (self.add_ord+other)
 
     
     
@@ -164,7 +164,7 @@ class Inf_ordinal():
 
     def __mul__(self,other):
         
-        if not isinstance(other, (Inf_ordinal,int)):
+        if not isinstance(other, (InfOrdinal,int)):
             raise NotImplemented
 
         if isinstance(other,int):
@@ -174,7 +174,7 @@ class Inf_ordinal():
             
             #(w**(a_n)*b_n+..+ w**(a_1)*b_1 + b_0)*m)=w**(a_n * m)*b_n+..+ w**(a_1)*b_1 + b_0
             else:
-                return Inf_ordinal(self.exp_ord,self.mult_ord*other,self.add_ord)
+                return InfOrdinal(self.exp_ord,self.mult_ord*other,self.add_ord)
 
         else:
             '''
@@ -183,9 +183,9 @@ class Inf_ordinal():
             where f and c are finite or infinite ordinals
             '''
             return (
-                Inf_ordinal(self.exp_ord+other.exp_ord,  
+                InfOrdinal(self.exp_ord+other.exp_ord,  
                         other.mult_ord,
-                        Inf_ordinal(self.exp_ord,self.mult_ord,self.add_ord)*other.add_ord)
+                        InfOrdinal(self.exp_ord,self.mult_ord,self.add_ord)*other.add_ord)
             )
 
     def __rmul__(self, other):
@@ -202,7 +202,7 @@ class Inf_ordinal():
 
     def __pow__(self,other):
         
-        if not isinstance(other, (int,Inf_ordinal)):
+        if not isinstance(other, (int,InfOrdinal)):
             raise NotImplemented
         
         if other<0:
@@ -218,7 +218,7 @@ class Inf_ordinal():
             #ord**n=ord*ord....*ord (n times)
             for i in range(1,other):
                 result=result*self.copy()
-
+            
             return result
         
         
@@ -227,11 +227,11 @@ class Inf_ordinal():
         #=w**(a_n * (w**(c_n)*d_n+..w**(c_1)*d_1)) * b_0*d_0
         else:
             
-            return Inf_ordinal(self.exp_ord*other.limit_part(),1,0) * (self**(other.finite_part()))
+            return InfOrdinal(self.exp_ord*other.limit_part(),1,0) * (self**(other.finite_part()))
 
     def __rpow__(self, other):
         
-        if not isinstance(other, (int,Inf_ordinal)):
+        if not isinstance(other, (int,InfOrdinal)):
             raise NotImplemented
         
         if other <0:
@@ -239,17 +239,22 @@ class Inf_ordinal():
         
         #k**(w*a+b) = k**(w*a) * k**(b)= (k**w)**a + k**(b)=w**a + k**(b)
         if self.exp_ord==1:
-            return Inf_ordinal(self.mult_ord, other**(self.add_ord), 0)
+            return InfOrdinal(self.mult_ord, other**(self.add_ord), 0)
         
         #k**(w**(a)*b + n) = w**(w**(a-1) * b) * (n ** k)
-        if isinstance(self.add_ord,int): 
-            help_ord=Inf_ordinal(self.exp_ord.pred(),self.mult_ord,0)
-            return Inf_ordinal(help_ord, other**(self.add_ord),0)
+        if isinstance(self.add_ord,int):
+
+            if isinstance(self.exp_ord, int):
+                help_ord=InfOrdinal(max(self.exp_ord-1,0),self.mult_ord,0)
+            
+            else:
+                help_ord=InfOrdinal(self.exp_ord.pred(),self.mult_ord,0)
+            return InfOrdinal(help_ord, other**(self.add_ord),0)
         
         #k**(w**(a_n)*b_n + .. + w**(a_1)*b_1 + b_0) =
         #k**(w**(a_n)*b_n * k**(w**(a_(n-1))*b_(n-1) + .. + w**(a_1)*b_1 + b_0)
         else:
-            return other**Inf_ordinal(self.exp_ord, (self.mult_ord),0) * other**(self.add_ord)
+            return other**InfOrdinal(self.exp_ord, (self.mult_ord),0) * other**(self.add_ord)
     
 
     

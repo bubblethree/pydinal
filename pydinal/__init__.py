@@ -1,2 +1,2 @@
-from .inf_ordinal import Inf_ordinal
+from .inf_ordinal import InfOrdinal
 w=Inf_ordinal()
