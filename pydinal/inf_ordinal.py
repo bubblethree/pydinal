@@ -31,7 +31,8 @@ class InfOrdinal():
         self.coe=coe
 
         self.add_ord=add_ord
-    
+
+        self.s=str(self)
     #returns a copy of the ordinal
     def copy(self):
         return InfOrdinal(self.exp_ord,self.coe,self.add_ord)
@@ -121,20 +122,59 @@ class InfOrdinal():
     
     
     def __add__(self,other):
+        return_ord= self.copy()
         
-        if isinstance(other,int):
+        working_ord=return_ord
+
             
+        if isinstance(other,int):
             if other <0:
                 raise TypeError("Can not add ordinal to "+ str(type(other)))
+                
+            while isinstance(working_ord.add_ord,InfOrdinal):
+                working_ord=working_ord.add_ord
+
+            working_ord.add_ord+=other
+            return return_ord
             
-            return InfOrdinal(self.exp_ord, self.coe, self.add_ord+other)
+            
+
+        other=other.copy()
+
+        while working_ord.exp_ord > other.exp_ord:
+                
+            if  isinstance(working_ord.add_ord, int):
+                working_ord.add_ord=other
+                return return_ord
+
+            working_ord=working_ord.add_ord
+            
+        if working_ord.exp_ord==other.exp_ord:
+            working_ord.exp_ord=other.exp_ord
+            working_ord.coe+=other.coe
+            working_ord.add_ord=other.add_ord
+
+                
+            return return_ord
+                
+
+        elif working_ord.exp_ord < other.exp_ord:
+            
+            working_ord.exp_ord=other.exp_ord
+            working_ord.coe=other.coe
+            working_ord.add_ord=other.add_ord
+            return return_ord
         
+        other=other.add_ord
+
+
         '''w**(a_n)*b_n+..+ w**(a_1)*b_1 + b_0 + w**(c)*d
         = w**(c_n)*d_n+..+ w**(c_i)*d_1 + d_0  if c > a_n
         
         w**(a_n)*b_n+..+ w**(a_1)*b_1 + b_0 + w**(c)*d
         =  w**(a_n)*b_n+..+ w**(a_i+c)*(b_i+d) .....+ b_0 for a_i=c 
-        '''
+        
+
         if (self.add_ord==0):
 
             if (self.exp_ord > other.exp_ord):
@@ -145,11 +185,11 @@ class InfOrdinal():
 
             if (self.exp_ord < other.exp_ord):
                 return other
-            
+        
         #This just splits up the add_ordinal in it's w components
         else:
             return InfOrdinal(self.exp_ord, self.coe, 0) + (self.add_ord+other)
-
+        '''
     
     
     def __radd__(self,other):
@@ -165,7 +205,7 @@ class InfOrdinal():
     def __mul__(self,other):
         
         if not isinstance(other, (InfOrdinal,int)):
-            raise TypeError("Can not add multiply with "+str(type(other)))
+            raise TypeError("Can not multiply with "+str(type(other)))
 
         if isinstance(other,int):
             
@@ -266,15 +306,89 @@ class InfOrdinal():
     
         ordinal_string="w"
         if (self.exp_ord>1):
-            ordinal_string+="**("+str(self.exp_ord)+")"
+            ordinal_string+="^("+str(self.exp_ord)+")"
 
         if (self.coe>1):
             ordinal_string+="*"+str(self.coe)
 
         if (self.add_ord>0):
-            ordinal_string+=" + "+str(self.add_ord)
+            ordinal_string+="+"+str(self.add_ord)
             
         return ordinal_string
 
 
     __repr__=__str__
+#"*","+"," ", ")", "1-9", "w"
+
+decimal_set={"0","1","2","3","4","5","6","7","8","9"}
+def compare_char_helper(ch_1,ch_2):
+    if ch_1==")":
+        return False
+    elif ch_1=="+":
+
+        return ch_2 in {")"}
+    elif ch_1=="*":
+        return ch_2 in {")", "+"}
+    
+    elif ch_1=="^":
+        return ch_2 in {")", "+","*"}
+    elif ch_1=="w":
+        return ch_2 in decimal_set
+    
+    elif ch_1 in decimal_set:
+        return ch_2 in {")","+"}
+    return RuntimeError("The string attribute of the ordinal has to be corrupted, as it can normally never be the case that:"+ch_1+" have to be compared "+ch_2 )
+
+def compare_ordinals(ord,other):
+
+    if isinstance(other, int) and isinstance(ord, InfOrdinal):
+        return True
+    
+    if  isinstance(ord, int) and isinstance(other, InfOrdinal):
+        return False
+    if  isinstance(ord, int) and isinstance(other, int):
+        return ord > other
+    s1=ord.s
+    s2=other.s
+
+    
+    if len(s1)>len(s2):
+        if s2 in s1:
+            return True
+
+    elif len(s2) >= len(s1):
+        if s1 in s2:
+            return False  
+    
+    counter_celling=min(len(s1),len(s2))
+    i=0
+
+    while s1[i]==s2[i]:
+        i+=1
+    
+    if s1[i] in decimal_set and s2[i] in decimal_set:
+        num_string_1=""
+        k=i
+
+        while s1[k] in decimal_set:
+            num_string_1+=s1[k]
+            k+=1
+            if k== len(s1):
+                break
+        k=i
+        num_string_2=""
+        while s2[k] in decimal_set:
+
+            num_string_2+=s2[k]
+            k+=1
+            if k== len(s2):
+                break
+        
+        
+        if len(num_string_1) != len(num_string_2):
+            return len(num_string_1) > len(num_string_2)
+        
+        return int(s1[i])> int(s2[i])
+
+    
+    return compare_char_helper(s1[i],s2[i])
